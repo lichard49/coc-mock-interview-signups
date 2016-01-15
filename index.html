@@ -3,6 +3,7 @@
   <head lang="en">
     <title>Schedulr</title>
 
+    <!-- Foundation -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/css/foundation.css">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/js/foundation.min.js"></script>
@@ -11,19 +12,39 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- Slick slider -->
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick.css"/>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick.min.js"></script>
+
+    <!-- Firebase -->
     <script src="https://cdn.firebase.com/js/client/2.3.2/firebase.js"></script>
+
+    <!-- My stuff -->
+    <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
     <div class="row">
       <div class="medium-12 columns">
 
-        <h1>Georgia Tech College of Computing<br>Mock Interview Sign Ups</h1>
-        <h4>Mock interviews take place in CoC 358</h4>
+        <h3>Georgia Tech College of Computing<br>Mock Interview Sign Ups</h3>
+        <hr>
+        <div class="your-class">
+          <div>
+            <p>Step 1. Choose a time and interviewer.</p>
+            <table id="calendar" border="1" style="width:100%">
+            </table>
+          </div>
+          <div>
+            <p>Step 2. Tell us about yourself.</p>
+          </div>
+          <div>
+            <p>Step 3. You're all done!</p>
+          </div>
+        </div>
 
-        <table id="calendar" border="1" style="width:100%">
-          
-        </table> 
+        
+
       </div>
     </div>
 
@@ -42,7 +63,7 @@
 
         var hour;
         for(hour in hours) {
-          calendarContents += '<tr><td>' + hours[hour] + '</td>';
+          calendarContents += '<tr><td class="firstColumn">' + hours[hour] + '</td>';
           for(day in days) {
             calendarContents += '<td id="' + days[day] + '-' + hours[hour] + '"></td>';
           }
@@ -52,12 +73,14 @@
         return calendarContents;
       }
 
+      function escapeSelector( selector ) {
+        return selector.replace( /(:|\.|\[|\]|,)/g, "\\$1" );
+      }
+
       $(document).ready(function() {
         $('#calendar').html(buildCalendar());
 
-        function escapeSelector( selector ) {
-          return selector.replace( /(:|\.|\[|\]|,)/g, "\\$1" );
-        }
+        $('.your-class').slick();
 
         var firebase = new Firebase("https://coc-mock-interviews.firebaseio.com/");
         firebase.child("week").on("value", function(snapshot) {
@@ -69,11 +92,15 @@
 
               hourSnapshot.forEach(function(personSnapshot) {
                 if(personSnapshot.val() == 'available') {
-                  cellContents += '<button>' + personSnapshot.key() + '</button>';
+                  cellContents += '<button class="interviewer">' + personSnapshot.key() + '</button>';
                 }
               });
 
               $('#'+escapeSelector(day + '-' + hour)).html(cellContents);
+
+              $('.interviewer').on('click', function() {
+                $('.slick-next').click();
+              });
             });
           });
         });

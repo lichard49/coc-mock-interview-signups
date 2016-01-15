@@ -1,0 +1,11 @@
+.slick-arrow, .slick-arrow {
+  display: none !important;
+}
+
+td.firstColumn {
+  width: 10%;
+}
+
+td {
+  width: 18%;
+}
