@@ -37,6 +37,32 @@
           </div>
           <div>
             <p>Step 2. Tell us about yourself.</p>
+            <form>
+              <div class="row">
+                <div class="large-12 columns">
+                  <label>
+                    Name (required)
+                    <input type="text" placeholder="John Smith">
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="large-12 columns">
+                  <label>
+                    Georgia Tech Email (required)
+                    <input type="text" placeholder="jsmith4@gatech.edu">
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="large-12 columns">
+                  <label>
+                    Anything else (optional)
+                    <textarea placeholder="I want to practice linked lists for my interview next week"></textarea>
+                  </label>
+                </div>
+              </div>
+            </form>
           </div>
           <div>
             <p>Step 3. You're all done!</p>
@@ -92,13 +118,15 @@
 
               hourSnapshot.forEach(function(personSnapshot) {
                 if(personSnapshot.val() == 'available') {
-                  cellContents += '<button class="interviewer">' + personSnapshot.key() + '</button>';
+                  var person = personSnapshot.key();
+                  cellContents += '<button id="' + day + '-' + hour + '-' + person + '"class="interviewer">' + person + '</button>';
                 }
               });
 
               $('#'+escapeSelector(day + '-' + hour)).html(cellContents);
 
-              $('.interviewer').on('click', function() {
+              $('.interviewer').on('click', function(e) {
+                console.log(this.id);
                 $('.slick-next').click();
               });
             });
