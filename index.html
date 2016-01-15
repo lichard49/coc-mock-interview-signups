@@ -28,7 +28,9 @@
       <div class="medium-12 columns">
 
         <br>
-        <h3>Georgia Tech College of Computing<br>Mock Interview Sign Ups</h3>
+        <h3 class="left">Georgia Tech College of Computing<br>Mock Interview Sign Ups</h3>
+        <img src="https://per.gatech.edu/wiki/lib/exe/fetch.php?cache=&w=600&h=590&media=wiki:buzz.png" class="logo right"/>
+
         <hr>
 
         <div id="step-slider">
@@ -66,12 +68,13 @@
               <div class="row">
                 <div class="large-12 columns">
                   <button id="back-step" class="button left">Back</button>
-                  <button id="next-step" class="button right">Next</button>
+                  <button id="next-step" class="button right">Confirm</button>
                 </div>
               </div>
           </div>
           <div>
             <p>Step 3. You're all done!</p>
+            <p>Thanks, <b id="name-space"></b>.&nbsp;&nbsp;Please come to CoC 358 at <b id="hour-space"></b> on <b id="day-space"></b> for your mock interview with <b id="interviewer-space"></b>.
           </div>
         </div>
 
@@ -82,6 +85,11 @@
     </div>
 
     <script type="text/javascript">
+
+      var firebase
+      var selectedDay;
+      var selectedTime;
+      var selectedInterviewer;
 
       function buildCalendar() {
         var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -127,7 +135,10 @@
             $('#'+escapeSelector(day + '-' + hour)).html(cellContents);
 
             $('.interviewer').on('click', function(e) {
-              console.log(this.id);
+              var selectedDetails = this.id.split('-');
+              selectedDay = selectedDetails[0];
+              selectedTime = selectedDetails[1];
+              selectedInterviewer = selectedDetails[2];
               $('.slick-next').click();
             });
           });
@@ -167,16 +178,34 @@
         return valid;
       }
 
+      function confirm() {
+        var intervieweeName = $('#name').val();
+        var intervieweeEmail = $('#email').val();
+        var intervieweeOther = $('#other').val();
+
+        $('#name-space').html(intervieweeName);
+        $('#day-space').html(selectedDay);
+        $('#hour-space').html(selectedTime);
+        $('#interviewer-space').html(selectedInterviewer);
+
+        firebase.child('week').child(selectedDay).child(selectedTime).child(selectedInterviewer).set({interviewee: intervieweeName, email: intervieweeEmail, other: intervieweeOther});
+      }
+
       $(document).ready(function() {        
         $('#calendar').html(buildCalendar());
 
         $('#step-slider').slick();
 
-        var firebase = new Firebase("https://coc-mock-interviews.firebaseio.com/");
-        firebase.child("week").on("value", newData);
+        firebase = new Firebase('https://coc-mock-interviews.firebaseio.com/');
+        firebase.child('week').on('value', newData);
 
-        $('#next-step').click(function() { if(validateForm()) { $('.slick-next').click(); }})
-        $('#back-step').click(function() { $('.slick-prev').click(); })
+        $('#next-step').click(function() {
+          if(validateForm()) {
+            confirm();
+            $('.slick-next').click();
+          }
+        });
+        $('#back-step').click(function() { $('.slick-prev').click(); });
       });
     </script>
   </body>
