@@ -19,89 +19,40 @@
         <h1>Georgia Tech College of Computing Mock Interview Sign Ups</h1>
         <h4>Mock interviews take place in CoC 358</h4>
 
-        <table border="1" style="width:100%">
-          <tr>
-            <th></th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-          </tr>
-          <tr>
-            <td>9:00AM</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>10:00AM</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>11:00AM</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>12:00PM</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>1:00PM</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>2:00PM</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>3:00PM</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>4:00PM</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>5:00PM</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
+        <table id="calendar" border="1" style="width:100%">
+          
         </table> 
       </div>
     </div>
+
+    <script type="text/javascript">
+
+      function buildCalendar() {
+        var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        var hours = ['9:00AM', '10:00AM', '11:00AM', '12:00PM', '1:00PM', '2:00PM', '3:00PM', '4:00PM', '5:00PM', ]
+        
+        var calendarContents = '<tr><th></th>';
+        var day;
+        for(day in days) {
+          calendarContents += '<th>' + days[day] + '</th>';
+        }
+        calendarContents += '</tr>'
+
+        var hour;
+        for(hour in hours) {
+          calendarContents += '<tr><td>' + hours[hour] + '</td>';
+          for(day in days) {
+            calendarContents += '<td id="' + days[day] + '-' + hours[hour] + '"></td>';
+          }
+          calendarContents += '</tr>';
+        }
+
+        return calendarContents;
+      }
+
+      $(document).ready(function() {
+        $('#calendar').html(buildCalendar());
+      });
+    </script>
   </body>
 </html>
