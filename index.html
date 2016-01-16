@@ -195,7 +195,9 @@
       $(document).ready(function() {        
         $('#calendar').html(buildCalendar());
 
-        $('#step-slider').slick();
+        $('#step-slider').slick({
+          swipe: false
+        });
 
         firebase = new Firebase('https://coc-mock-interviews.firebaseio.com/');
         firebase.child('week').on('value', newData);
