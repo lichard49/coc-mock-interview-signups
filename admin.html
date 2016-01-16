@@ -29,6 +29,7 @@
         <hr>
 
         <p>Hover over an interviewee's name to see details.</p>
+
         <table id="calendar" border="1" style="width:100%">
         </table>
 
@@ -86,19 +87,16 @@
                 var interviewee = personSnapshot.val().interviewee;
                 var email = personSnapshot.val().email;
                 var other = personSnapshot.val().other;
-                intervieweeContents = '<span data-tooltip="" data-width="200" aria-haspopup="true" class="has-tip radius" title="Email: ' + email + '\nOther: ' + other + '">' + interviewee + '</span>';
+                intervieweeContents = '<span data-tooltip="" data-width="200" aria-haspopup="titlerue" class="has-tip radius" title="<b>Email:</b> ' + email + '\n<b>Other:</b> ' + other + '">' + interviewee + '</span>';
               }
               cellContents += '<div class="interviewer">' + person + ': ' + intervieweeContents + '</div>';
               
             });
 
             $('#'+escapeSelector(day + '-' + hour)).html(cellContents);
-
-            $('.interviewer').on('click', function(e) {
-              
-            });
           });
         });
+        $(document).foundation();
       }
 
       $(document).ready(function() {        
