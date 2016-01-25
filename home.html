@@ -1,0 +1,143 @@
+<div id="step-slider">
+  <div>
+    <p>Step 1. Choose a time and interviewer.</p>
+    <table id="calendar" border="1" style="width:100%">
+    </table>
+  </div>
+  <div>
+    <p>Step 2. Tell us about yourself.</p>
+      <div class="row">
+        <div class="large-12 columns">
+          <label>
+            Name (required)
+            <input type="text" id="name" placeholder="John Smith">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-12 columns">
+          <label>
+            Georgia Tech Email (required)
+            <input type="text" id="email" placeholder="jsmith4@gatech.edu">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-12 columns">
+          <label>
+            Anything else (optional)
+            <textarea id="other" placeholder="I want to practice linked lists for my interview next week"></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-12 columns">
+          <button id="back-step" class="button left">Back</button>
+          <button id="next-step" class="button right">Confirm</button>
+        </div>
+      </div>
+  </div>
+  <div>
+    <p>Step 3. You're all done!</p>
+    <p>Thanks, <b id="name-space"></b>.&nbsp;&nbsp;Please come to CoC 358 at <b id="hour-space"></b> on <b id="day-space"></b> for your mock interview with <b id="interviewer-space"></b>.
+  </div>
+</div>
+<script type="text/javascript">
+
+  var firebase
+  var selectedDay;
+  var selectedTime;
+  var selectedInterviewer;
+
+  function newData(snapshot) {
+    snapshot.forEach(function(daySnapshot) {
+      daySnapshot.forEach(function(hourSnapshot) {
+        var day = daySnapshot.key();
+        var hour = hourSnapshot.key();
+        var cellContents = '';
+
+        hourSnapshot.forEach(function(personSnapshot) {
+          if(personSnapshot.val() == 'available') {
+            var person = personSnapshot.key();
+            cellContents += '<button id="' + day + '-' + hour + '-' + person + '"class="interviewer">' + person + '</button>';
+          }
+        });
+
+        $('#'+escapeSelector(day + '-' + hour)).html(cellContents);
+
+        $('.interviewer').on('click', function(e) {
+          var selectedDetails = this.id.split('-');
+          selectedDay = selectedDetails[0];
+          selectedTime = selectedDetails[1];
+          selectedInterviewer = selectedDetails[2];
+          $('.slick-next').click();
+        });
+      });
+    });
+  }
+
+  function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
+
+  function validateForm() {
+    // clear previous errors
+    $('.error').remove();
+
+    var name = $('#name').val();
+    var email = $('#email').val();
+    var gatechDomain = 'gatech.edu';
+    var valid = true;
+
+    if(name.length == 0) {
+      $('#name').after('<small class="error">Name is required</small>');
+      valid = false;
+    }
+    if(email.length == 0) {
+      $('#email').after('<small class="error">Email is required</small>');
+      valid = false;
+    }
+    else if(!validateEmail(email)) {
+      $('#email').after('<small class="error">Email is invalid</small>');
+      valid = false;
+    }
+    else if(email.indexOf(gatechDomain) != email.length-gatechDomain.length) {
+      $('#email').after('<small class="error">Not a Georgia Tech email</small>');
+      valid = false;
+    }
+    return valid;
+  }
+
+  function confirm() {
+    var intervieweeName = $('#name').val();
+    var intervieweeEmail = $('#email').val();
+    var intervieweeOther = $('#other').val();
+
+    $('#name-space').html(intervieweeName);
+    $('#day-space').html(selectedDay);
+    $('#hour-space').html(selectedTime);
+    $('#interviewer-space').html(selectedInterviewer);
+
+    firebase.child('week').child(selectedDay).child(selectedTime).child(selectedInterviewer).set({interviewee: intervieweeName, email: intervieweeEmail, other: intervieweeOther});
+  }
+
+  $(document).ready(function() {        
+    $('#calendar').html(buildCalendar());
+
+    $('#step-slider').slick({
+      swipe: false
+    });
+
+    firebase = new Firebase('https://coc-mock-interviews.firebaseio.com/');
+    firebase.child('week').on('value', newData);
+
+    $('#next-step').click(function() {
+      if(validateForm()) {
+        confirm();
+        $('.slick-next').click();
+      }
+    });
+    $('#back-step').click(function() { $('.slick-prev').click(); });
+  });
+</script>
