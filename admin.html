@@ -1,86 +1,44 @@
-<!DOCTYPE html>
-<html>
-  <head lang="en">
-    <title>Georgia Tech College of Computing Mock Interview Sign Ups</title>
+<p>Hover over an interviewee's name to see details.</p>
 
-    <!-- Foundation -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/css/foundation.css">
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/js/foundation.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
+<table id="calendar" border="1" style="width:100%">
+</table>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript">
+  var firebase;
 
-    <!-- Firebase -->
-    <script src="https://cdn.firebase.com/js/client/2.3.2/firebase.js"></script>
+  function newData(snapshot) {
+    snapshot.forEach(function(daySnapshot) {
+      daySnapshot.forEach(function(hourSnapshot) {
+        var day = daySnapshot.key();
+        var hour = hourSnapshot.key();
+        var cellContents = '';
 
-    <!-- My stuff -->
-    <link rel="stylesheet" href="style.css">
-    <script src="utility.js"></script>
-    <link rel="icon" href="https://per.gatech.edu/wiki/lib/exe/fetch.php?cache=&w=600&h=590&media=wiki:buzz.png" type="image/x-icon"/>
-    <link rel="shortcut icon" href="https://per.gatech.edu/wiki/lib/exe/fetch.php?cache=&w=600&h=590&media=wiki:buzz.png" type="image/x-icon"/>
-  </head>
-
-  <body>
-    <div class="row">
-      <div class="medium-12 columns">
-
-        <br>
-        <h3 class="left">Georgia Tech College of Computing<br>Mock Interview Sign Ups</h3>
-        <img src="https://per.gatech.edu/wiki/lib/exe/fetch.php?cache=&w=600&h=590&media=wiki:buzz.png" class="logo right"/>
-        <hr>
-
-        <p>Hover over an interviewee's name to see details.</p>
-
-        <table id="calendar" border="1" style="width:100%">
-        </table>
-
-        <hr>
-        <p>Brought to you by Georgia Tech Technical Interview Prep (GT TIP).&nbsp;&nbsp;<a href="https://www.facebook.com/gttechintprep">Like us on Facebook!</a></p>
-        <p>Questions?&nbsp;&nbsp;Email us at <a href="mailto:coctechintv@gatech.edu" target="_top">coctechintv@gatech.edu</a>.</p>
-
-      </div>
-    </div>
-
-    <script type="text/javascript">
-      var firebase;
-
-      function newData(snapshot) {
-        snapshot.forEach(function(daySnapshot) {
-          daySnapshot.forEach(function(hourSnapshot) {
-            var day = daySnapshot.key();
-            var hour = hourSnapshot.key();
-            var cellContents = '';
-
-            hourSnapshot.forEach(function(personSnapshot) {
-              var person = personSnapshot.key();
-              var intervieweeContents;
-              if(personSnapshot.val().interviewee == null) {
-                intervieweeContents = personSnapshot.val();
-              }
-              else {
-                var interviewee = personSnapshot.val().interviewee;
-                var email = personSnapshot.val().email;
-                var other = personSnapshot.val().other;
-                intervieweeContents = '<span data-tooltip="" data-width="200" aria-haspopup="titlerue" class="has-tip radius" title="<b>Email:</b> ' + email + '\n<b>Other:</b> ' + other + '">' + interviewee + '</span>';
-              }
-              cellContents += '<div class="interviewer">' + person + ': ' + intervieweeContents + '</div>';
-              
-            });
-
-            $('#'+escapeSelector(day + '-' + hour)).html(cellContents);
-          });
+        hourSnapshot.forEach(function(personSnapshot) {
+          var person = personSnapshot.key();
+          var intervieweeContents;
+          if(personSnapshot.val().interviewee == null) {
+            intervieweeContents = personSnapshot.val();
+          }
+          else {
+            var interviewee = personSnapshot.val().interviewee;
+            var email = personSnapshot.val().email;
+            var other = personSnapshot.val().other;
+            intervieweeContents = '<span data-tooltip="" data-width="200" aria-haspopup="titlerue" class="has-tip radius" title="<b>Email:</b> ' + email + '\n<b>Other:</b> ' + other + '">' + interviewee + '</span>';
+          }
+          cellContents += '<div class="interviewer">' + person + ': ' + intervieweeContents + '</div>';
+          
         });
-        $(document).foundation();
-      }
 
-      $(document).ready(function() {        
-        $('#calendar').html(buildCalendar());
-
-        firebase = new Firebase('https://coc-mock-interviews.firebaseio.com/');
-        firebase.child('week').on('value', newData);
+        $('#'+escapeSelector(day + '-' + hour)).html(cellContents);
       });
-    </script>
-  </body>
-</html>
+    });
+    $(document).foundation();
+  }
+
+  $(document).ready(function() {        
+    $('#calendar').html(buildCalendar());
+
+    firebase = new Firebase('https://coc-mock-interviews.firebaseio.com/');
+    firebase.child('week').on('value', newData);
+  });
+</script>
