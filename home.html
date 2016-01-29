@@ -122,15 +122,27 @@
     firebase.child('week').child(selectedDay).child(selectedTime).child(selectedInterviewer).set({interviewee: intervieweeName, email: intervieweeEmail, other: intervieweeOther});
   }
 
-  $(document).ready(function() {        
-    $('#calendar').html(buildCalendar());
+  function datesRetrieved(snapshot) {
+    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    var dates = [];
+    var hours = ['9:00AM', '10:00AM', '11:00AM', '12:00PM', '1:00PM', '2:00PM', '3:00PM', '4:00PM', '5:00PM'];
+    
+    days.forEach(function(day) {
+      dates.push(snapshot.child(day).val());
+    });
 
+    $('#calendar').html(buildCalendar(days, dates, hours));
+
+    firebase.child('week').on('value', newData);
+  }
+
+  $(document).ready(function() {        
     $('#step-slider').slick({
       swipe: false
     });
 
     firebase = new Firebase('https://coc-mock-interviews.firebaseio.com/');
-    firebase.child('week').on('value', newData);
+    firebase.child('dates').on('value', datesRetrieved);
 
     $('#next-step').click(function() {
       if(validateForm()) {
